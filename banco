@@ -1,0 +1,46 @@
+saldo = 0
+extrato = 0
+limite_saque = 3
+número_saque = 0
+
+while True:
+    opçao = input('''
+
+    [d] Depositar
+    [s] Sacar
+    [e] Extrato
+    [q] Sair
+
+    ''' ).lower()
+
+    if opçao == "d":
+        valor = float(input("Qual o valor que tu queres depositar?: R$ "))
+        if valor > 0 :
+            saldo += valor
+            extrato += valor
+            print(f"R${valor} depositado em sua conta")
+        else:
+            print("Valor invalido!! Tente novamente.")
+    elif opçao == "q":
+        print("Encerrando programa...")
+        break
+    elif opçao == 's':
+        saque = float(input("Qual o valor que tu desejas sacar? R$ "))
+        if saque > 500:
+            print("LIMITE DE 500 REAIS POR SAQUE!!")
+        elif saque > saldo:
+            print("Saldo insuficiente.")
+        elif número_saque >= limite_saque:
+            print("LIMITE DE SAQUE DIARIO ATINGINDO")
+        elif saque > 0:
+            saldo -= saque
+            extrato -= saque
+            número_saque += 1
+            print(f"Saque de R${saque:.2f} realizado com sucesso.")
+        else:
+            print('Valor invalido.')
+
+    elif opçao == 'e':
+        print(f"R$ {extrato:.2f} reis em sua conta.")
+    else:
+        print("Opção invalida! Tente novamente.")
