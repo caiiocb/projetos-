@@ -1,49 +1,69 @@
+from time import sleep
 saldo = 0
+limite_saque = 0
 extrato = ''
-limite_saque = 3
 número_saque = 0
-
 while True:
-    opçao = input('''
-
-    [d] Depositar
-    [s] Sacar
-    [e] Extrato
-    [q] Sair
-
-    ''' ).lower()
-
-    if opçao == "d":
-        valor = float(input("Qual o valor que tu queres depositar?: R$ "))
-        if valor > 0 :
-            saldo += valor
-            extrato += f'Deposíto: R$ {valor:.2f}\n'
-            print(f"R${valor} depositado em sua conta")
+    servico = int(input( '''
+    Bem-vindo ao Banco 2.0!
+    Selecione uma opção:
+    1 - Depositar
+    2 - Sacar
+    3 - Extrato
+    4 - Sair
+    '''))
+    if servico == 1:
+        deposito = float(input('Digite o valor do depósito: '))
+        print('Efetuando depósito...')
+        sleep(1)
+        if deposito <= 0:
+            print('Valor inválido. Tente novamente.')
+            continue
         else:
-            print("Valor invalido!! Tente novamente.")
-    elif opçao == "q":
-        print("Encerrando programa...")
-        break
-    elif opçao == 's':
-        saque = float(input("Qual o valor que tu desejas sacar? R$ "))
-        if saque > 500:
-            print("LIMITE DE 500 REAIS POR SAQUE!!")
+            saldo += deposito
+            extrato += f'Depósito: R$ {deposito}\n'
+            print(f'Depósito de R$ {deposito} realizado com sucesso!!')
+    elif servico == 2:
+        saque = float(input('Digite o valor do saque:'))
+        if saque <= 0:
+            print('Valor inválido. Tente novamente.')
         elif saque > saldo:
-            print("Saldo insuficiente.")
-        elif número_saque >= limite_saque:
-            print("LIMITE DE SAQUE DIARIO ATINGINDO")
-        elif saque > 0:
-            saldo -= saque
-            extrato += f'Saque: R${saque:.2f}\n'
-            número_saque += 1
-            print(f"Saque de R${saque:.2f} realizado com sucesso.")
+            print('Efetuando saque...')
+            sleep(1)
+            print('Saldo insuficiente para saque.')
+        elif limite_saque >= 3:
+            print('Efetuando saque...')
+            sleep(1)
+            print('Limite de saques diários atingido.')
+            extrato += f'Saque: R$ {saque} - Limite de saques atingido\n'
+        elif saque > 500:
+            print('Efetuando saque...')
+            sleep(1)
+            print('Valor máximo de saque é R$ 500. Tente novamente.')
         else:
-            print('Valor invalido.')
-
-    elif opçao == "e":
-        print("\n======== EXTRATO ========")
-        print("Nenhuma movimentação realizada." if not extrato else extrato)
-        print(f"Saldo atual: R$ {saldo:.2f}")
-        print("==========================")
+            saldo -= saque
+            limite_saque += 1
+            print('Efetuando saque...')
+            sleep(1)
+            print(f'Saque de R$ {saque} realizado com sucesso!')
+            extrato += f'Saque: R$ {saque}\n'
+    elif servico == 3:
+        print('Gerando extrato...')
+        sleep(1)
+        relatorio = f'''
+Extrato bancário:
+---------------------
+{extrato if extrato else 'Nenhuma movimentação realizada.'}
+---------------------
+Saldo atual: R$ {saldo}
+    '''
+        print(relatorio)
+    elif servico == 4:
+        print('Efetuando logout...')
+        sleep(1)
+        print('Obrigado por utilizar o Banco 2.0! Até logo!')
+        break
     else:
-        print("Opção invalida! Tente novamente.")
+        print('Análise de serviço...')
+        sleep(1)
+        print('Opção inválida. Tente novamente.')
