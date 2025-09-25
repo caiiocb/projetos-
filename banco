@@ -1,8 +1,9 @@
 from time import sleep
+
 saldo = 0
 limite_saque = 0
 extrato = ''
-número_saque = 0
+
 while True:
     servico = int(input( '''
     Bem-vindo ao Banco 2.0!
