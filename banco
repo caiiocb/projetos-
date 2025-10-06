@@ -1,70 +1,143 @@
 from time import sleep
+from random import randint
 
-saldo = 0
-limite_saque = 0
-extrato = ''
+def menu():
+    servico = int(input('''
+Bem-vindo ao Banco 2.0!
+Selecione uma opção:
+1 - Depositar
+2 - Sacar
+3 - Extrato
+4 - criar usuário
+5 - Criar conta
+6- Sair
+'''))
+    return servico
 
-while True:
-    servico = int(input( '''
-    Bem-vindo ao Banco 2.0!
-    Selecione uma opção:
-    1 - Depositar
-    2 - Sacar
-    3 - Extrato
-    4 - Sair
-    '''))
-    if servico == 1:
-        deposito = float(input('Digite o valor do depósito: '))
-        print('Efetuando depósito...')
-        sleep(1)
-        if deposito <= 0:
-            print('Valor inválido. Tente novamente.')
-            continue
+def main():
+    saldo = 0
+    limite_saque = 0
+    extrato = []
+    usuarios_cadastrados = []
+    agencia = '0001'
+    numero_conta = 1
+    while True:
+        servico = menu()
+        if servico == 6:
+            print('Saindo...')
+            sleep(1)
+            print('Obrigado por usar o Banco 2.0! Volte sempre!')
+            break
+        elif servico == 1:
+            extrato, saldo = depositar(extrato, saldo)
+        elif servico == 2:
+            extrato, saldo, limite_saque = sacar(extrato = extrato, saldo = saldo, limite_saque = limite_saque)
+        elif servico == 3:
+            mostrar_extrato(extrato , saldo = saldo)
+        elif servico == 4:
+            numero_conta = criar_usuario(usuarios_cadastrados)
+        elif servico == 5:
+            criar_conta(agencia, numero_conta, usuarios_cadastrados)
         else:
-            saldo += deposito
-            extrato += f'Depósito: R$ {deposito}\n'
-            print(f'Depósito de R$ {deposito} realizado com sucesso!!')
-    elif servico == 2:
-        saque = float(input('Digite o valor do saque:'))
-        if saque <= 0:
-            print('Valor inválido. Tente novamente.')
-        elif saque > saldo:
-            print('Efetuando saque...')
-            sleep(1)
-            print('Saldo insuficiente para saque.')
-        elif limite_saque >= 3:
-            print('Efetuando saque...')
-            sleep(1)
-            print('Limite de saques diários atingido.')
-            extrato += f'Saque: R$ {saque} - Limite de saques atingido\n'
-        elif saque > 500:
-            print('Efetuando saque...')
-            sleep(1)
-            print('Valor máximo de saque é R$ 500. Tente novamente.')
-        else:
-            saldo -= saque
-            limite_saque += 1
-            print('Efetuando saque...')
-            sleep(1)
-            print(f'Saque de R$ {saque} realizado com sucesso!')
-            extrato += f'Saque: R$ {saque}\n'
-    elif servico == 3:
-        print('Gerando extrato...')
-        sleep(1)
-        relatorio = f'''
-Extrato bancário:
----------------------
-{extrato if extrato else 'Nenhuma movimentação realizada.'}
----------------------
-Saldo atual: R$ {saldo}
-    '''
-        print(relatorio)
-    elif servico == 4:
-        print('Efetuando logout...')
-        sleep(1)
-        print('Obrigado por utilizar o Banco 2.0! Até logo!')
-        break
+            print('Opção inválida. Tente novamente.')
+
+def depositar(extrato, saldo, /):
+    deposito = float(input('Digite o valor do depósito: '))
+    if deposito <= 0:
+        print('Valor inválido. Tente novamente.')
     else:
-        print('Análise de serviço...')
+        saldo += deposito
+        extrato.append(f'Depósito: R$ {deposito:.2f}')
+        print(f'Depósito de R$ {deposito:.2f} realizado com sucesso!!')
+    return extrato, saldo
+
+def sacar(*, extrato, saldo, limite_saque):
+    saque = float(input('Digite o valor do saque:'))
+    if saque <= 0:
+        print('Valor inválido. Tente novamente.')
+    elif saque > saldo:
+        print('Efetuando saque...')
         sleep(1)
-        print('Opção inválida. Tente novamente.')
+        print('Saldo insuficiente para saque.')
+    elif limite_saque >= 3:
+        print('Efetuando saque...')
+        sleep(1)
+        print('Limite de saques diários atingido.')
+        extrato.append(f'Saque: R$ {saque} - Limite de saques atingido\n')
+    elif saque > 500:
+        print('Efetuando saque...')
+        sleep(1)
+        print('Valor máximo de saque é R$ 500. Tente novamente.')
+    else:
+        saldo -= saque
+        limite_saque += 1
+        print('Efetuando saque...')
+        sleep(1)
+        print(f'Saque de R$ {saque} realizado com sucesso!')
+        extrato.append(f'Saque: R$ {saque}\n')
+    return extrato, saldo, limite_saque
+
+def mostrar_extrato( extrato, /, *, saldo):
+    print('Gerando extrato...')
+    sleep(1)
+    print('''
+--------------------
+Extrato bancário:
+''')
+    if not extrato:
+        print('Nenhuma movimentação realizada.')
+    else:
+        for item in extrato:
+            print(item)
+    print(f'''--------------------
+Saldo atual: R$ {saldo:.2f}
+''')
+
+def criar_usuario(usuarios_cadastrados):
+    nome = input('Digite seu nome completo:').upper()
+    data_nascimento = input('Digite sua data de nascimento (DD/MM/AAAA):')
+    while True:
+        cpf = input('Digite seu CPF (somente números):')
+        cpf = cpf.replace('.', '').replace('-', '')
+        if len(cpf) != 11 or not cpf.isdigit():
+            print('CPF inválido. Tente novamente.')
+            continue
+        if any(u[2] == cpf for u in usuarios_cadastrados):
+            print('Usuário já cadastrado. Tente novamente.')
+            continue
+        break
+    endereco = input('Digite seu endereço (logradouro, número - bairro - cidade/sigla estado):').upper()
+    print('Criando usuário...')
+    sleep(1)
+    print('Usuário criado com sucesso!')
+    usuarios_cadastrados.append([nome, data_nascimento, cpf, endereco])
+
+def criar_conta(agencia, numero_conta, usuarios_cadastrados):
+    cpf = input('Digite o CPF do usuário:')
+    cpf = cpf.replace('.', '').replace('-', '')
+    usuario = None
+    for u in usuarios_cadastrados:
+        if u[2] == cpf:
+            usuario = u
+            break
+    if usuario:
+        print('Usuário encontrado!\n Criando conta...')
+        sleep(1)
+        print(f'''
+Usuário: {usuarios}
+Agência: {agencia}
+Número da conta: {numero_conta}
+''')
+        print('Conta criada com sucesso!')
+        return numero_conta + 1
+    else:
+        print('Usuário não encontrado!!!\nPrecisa criar usuário antes de prosseguir.')
+        opcao = input('Deseja criar um usuário? [S/N]').upper()
+        if opcao == 'S':
+            criar_usuario(usuarios_cadastrados)
+        else:
+            print('Voltando ao menu principal...')
+            sleep(1)
+        return numero_conta
+       
+main()
